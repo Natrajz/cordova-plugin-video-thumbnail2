@@ -38,8 +38,11 @@ if(![saveFolder hasSuffix:@"/"]){
 }
 
 NSArray *array = [videoPath componentsSeparatedByString:@"/"];
-NSString* name= [array objectAtIndex:array.count];
-NSString * savePath=[NSString stringWithFormat:@"%@thumbnail_%@.jpg",saveFolder, name];
+NSString* name= [array objectAtIndex:array.count-1];
+name = [name stringByReplacingOccurrencesOfString:@".mp4"
+									withString:@""];
+
+NSString * savePath=[NSString stringWithFormat:@"%@thumbnail_%@.jpg", saveFolder, name];
 [self.commandDelegate runInBackground:^{
   CDVPluginResult* pluginResult=nil;
   if(extractVideoThumbnail(videoPath, width,height,savePath)){
