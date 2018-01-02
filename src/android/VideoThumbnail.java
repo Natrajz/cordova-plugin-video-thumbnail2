@@ -56,8 +56,10 @@ public class VideoThumbnail extends CordovaPlugin {
 
                     FileOutputStream theOutputStream = null;
                     try {
-                        Date now = new Date();
-                        String filePath =cacheDir.getAbsolutePath()+"thumbnail_" + now.getTime() + ".jpg";
+						String[] r = videoPath.split("/");
+						String name = r[r.length - 1].replace(".mp4", "");
+						
+                        String filePath =cacheDir.getAbsolutePath()+"thumbnail_" + name + ".jpg";
                         File theOutputFile = new File(filePath);
                         if (!theOutputFile.exists()) {
                             if (!theOutputFile.createNewFile()) {
