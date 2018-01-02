@@ -36,9 +36,10 @@ return;
 if(![saveFolder hasSuffix:@"/"]){
   saveFolder=[NSString stringWithFormat:@"%@/",saveFolder];
 }
-NSTimeInterval  now=   [NSDate date].timeIntervalSince1970;
-NSString* nowString=[NSString stringWithFormat:@"%.0f",now];
-NSString * savePath=[NSString stringWithFormat:@"%@thumbnail_%@.jpg",saveFolder,nowString];
+
+NSArray *array = [videoPath componentsSeparatedByString:@"/"];
+NSString* name= [array objectAtIndex:array.count];
+NSString * savePath=[NSString stringWithFormat:@"%@thumbnail_%@.jpg",saveFolder, name];
 [self.commandDelegate runInBackground:^{
   CDVPluginResult* pluginResult=nil;
   if(extractVideoThumbnail(videoPath, width,height,savePath)){
