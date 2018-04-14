@@ -13,6 +13,9 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import android.util.Log;
+import android.media.MediaMetadataRetriever;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
@@ -22,11 +25,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-
-import com.bumptech.glide.Glide;
-
+import java.util.HashMap;
 
 public class VideoThumbnail extends CordovaPlugin {
+
+    private static final String TAG = "videoThumbnail";
 
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext)
             throws JSONException {
@@ -105,34 +108,34 @@ public class VideoThumbnail extends CordovaPlugin {
      * @return
      */
     private Bitmap getVideoThumbnail(String videoPath, int width, int height,
-                                     int kind) {
+                                     int kind){
 
-		Bitmap bitmap;
-		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-		int kind = MediaStore.Video.Thumbnails.MINI_KIND;
-		try {
-			if ("http".equalsIgnoreCase(videoPath.substring(0,4))) {
-				retriever.setDataSource(videoPath, new HashMap<String, String>());
-			} else {
-				retriever.setDataSource(videoPath);
-			}
-			bitmap = retriever.getFrameAtTime(0);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			// Assume this is a corrupt video file.
-		} finally {
-			try {
-				retriever.release();
-			} catch (RuntimeException ex) {
-				// Ignore failures while cleaning up.
-			}
-		}
-		if (kind == Images.Thumbnails.MICRO_KIND && bitmap != null) {
-			bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-		}
-
-
-		return bitmap;
+        Bitmap bitmap = null;
+        MediaMetadataRetriever mediaMetadataRetriever = null;
+        try
+        {
+            mediaMetadataRetriever = new MediaMetadataRetriever();
+            if (Build.VERSION.SDK_INT >= 14)
+                mediaMetadataRetriever.setDataSource(videoPath, new HashMap<String, String>());
+            else
+                mediaMetadataRetriever.setDataSource(videoPath);
+            //   mediaMetadataRetriever.setDataSource(videoPath);
+            bitmap = mediaMetadataRetriever.getFrameAtTime(1, MediaMetadataRetriever.OPTION_CLOSEST);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Log.v(TAG, "Exception in retriveVideoFrameFromVideo(String videoPath)"+ e.getMessage());
+            return null;
+        }
+        finally
+        {
+            if (mediaMetadataRetriever != null)
+            {
+                mediaMetadataRetriever.release();
+            }
+        }
+        return bitmap;
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
