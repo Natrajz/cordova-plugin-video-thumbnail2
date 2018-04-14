@@ -23,6 +23,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import com.bumptech.glide.Glide;
+
+
 public class VideoThumbnail extends CordovaPlugin {
 
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext)
@@ -103,11 +106,33 @@ public class VideoThumbnail extends CordovaPlugin {
      */
     private Bitmap getVideoThumbnail(String videoPath, int width, int height,
                                      int kind) {
-        Uri videoUri= Uri.parse(videoPath);
-        // 获取视频的缩略图
-        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(getPath(cordova.getActivity(), videoUri), kind);
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        return bitmap;
+
+		Bitmap bitmap;
+		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+		int kind = MediaStore.Video.Thumbnails.MINI_KIND;
+		try {
+			if ("http".equalsIgnoreCase(videoPath.substring(0,4))) {
+				retriever.setDataSource(videoPath, new HashMap<String, String>());
+			} else {
+				retriever.setDataSource(videoPath);
+			}
+			bitmap = retriever.getFrameAtTime(500);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			// Assume this is a corrupt video file.
+		} finally {
+			try {
+				retriever.release();
+			} catch (RuntimeException ex) {
+				// Ignore failures while cleaning up.
+			}
+		}
+		if (kind == Images.Thumbnails.MICRO_KIND && bitmap != null) {
+			bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+		}
+
+
+		return bitmap;
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
