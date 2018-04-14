@@ -116,7 +116,7 @@ public class VideoThumbnail extends CordovaPlugin {
 			} else {
 				retriever.setDataSource(videoPath);
 			}
-			bitmap = retriever.getFrameAtTime(500);
+			bitmap = retriever.getFrameAtTime(0);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			// Assume this is a corrupt video file.
