@@ -110,32 +110,34 @@ public class VideoThumbnail extends CordovaPlugin {
     private Bitmap getVideoThumbnail(String videoPath, int width, int height,
                                      int kind){
 
-        Bitmap bitmap = null;
-        MediaMetadataRetriever mediaMetadataRetriever = null;
-        try
-        {
-            mediaMetadataRetriever = new MediaMetadataRetriever();
-            if (Build.VERSION.SDK_INT >= 14)
-                mediaMetadataRetriever.setDataSource(videoPath, new HashMap<String, String>());
-            else
-                mediaMetadataRetriever.setDataSource(videoPath);
-            //   mediaMetadataRetriever.setDataSource(videoPath);
-            bitmap = mediaMetadataRetriever.getFrameAtTime(1, MediaMetadataRetriever.OPTION_CLOSEST);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            Log.v(TAG, "Exception in retriveVideoFrameFromVideo(String videoPath)"+ e.getMessage());
-            return null;
-        }
-        finally
-        {
-            if (mediaMetadataRetriever != null)
-            {
-                mediaMetadataRetriever.release();
+        if (videoPath.contains("http")) {
+            Bitmap bitmap = null;
+            MediaMetadataRetriever mediaMetadataRetriever = null;
+            try {
+                mediaMetadataRetriever = new MediaMetadataRetriever();
+                if (Build.VERSION.SDK_INT >= 14)
+                    mediaMetadataRetriever.setDataSource(videoPath, new HashMap<String, String>());
+                else
+                    mediaMetadataRetriever.setDataSource(videoPath);
+                //   mediaMetadataRetriever.setDataSource(videoPath);
+                bitmap = mediaMetadataRetriever.getFrameAtTime(1, MediaMetadataRetriever.OPTION_CLOSEST);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.v(TAG, "Exception in retriveVideoFrameFromVideo(String videoPath)" + e.getMessage());
+                return null;
+            } finally {
+                if (mediaMetadataRetriever != null) {
+                    mediaMetadataRetriever.release();
+                }
             }
+            return bitmap;
+
+        }else {
+
+            return ThumbnailUtils.createVideoThumbnail(videoPath,
+                    MediaStore.Images.Thumbnails.MINI_KIND);
+
         }
-        return bitmap;
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
