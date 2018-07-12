@@ -24,8 +24,4 @@ var videoThumbnail = {
   }
 };
 
-/* @Deprecated */
-window.plugins = window.plugins || {};
-window.plugins.videoThumbnail = videoThumbnail;
-
 module.exports = videoThumbnail;

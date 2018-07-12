@@ -14,7 +14,7 @@ This plugins can generate a thumbnail from a remote or local video file.
 ## Usage
 
 ```javascript
-window.plugins.videoThumbnail
+window.videoThumbnail
   .createThumb({
     videoPath: "/video1.mov",
     width: 100,
