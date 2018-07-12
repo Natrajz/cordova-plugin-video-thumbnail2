@@ -1,4 +1,4 @@
-package com.lulee007.cordova.videothumbnail;
+package com.dride.cordova.videothumbnail;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

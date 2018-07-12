@@ -1,31 +1,27 @@
 /**
- * Created by luxiaohui on 15/10/22.
+ * Created by luxiaohui on 15/10/15.
+ * Modified by Yossi Neiman
  */
 /*
  According to apache license
 
- https://github.com/lulee007/cordova-plugin-video-thumbnail
+ https://github.com/dride/cordova-plugin-video-thumbnail
 
  */
 
-var exec = require('cordova/exec');
+var exec = require("cordova/exec");
 
 var videoThumbnail = {
-
-    build: function(success, failure, config) {
-        exec(success || function() {},
-            failure || function() {},
-            'VideoThumbnail',
-            'buildThumbnail',
-            [
-                config.videoPath,
-                config.width,
-                config.height,
-                config.kind
-            ]);
-    }
-
-
+  createThumb: function(config) {
+    return new Promise(function(resolve, reject) {
+      exec(resolve, reject, "VideoThumbnail", "buildThumbnail", [
+        config.videoPath,
+        config.width,
+        config.height,
+        config.kind
+      ]);
+    });
+  }
 };
 
 /* @Deprecated */

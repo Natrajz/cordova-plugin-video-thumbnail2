@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-video-thumbnail" version="0.0.1" xmlns="http://www.phonegap.com/ns/plugins/1.0"
+<plugin id="cordova-plugin-video-thumbnail" version="1.0.0" xmlns="http://www.phonegap.com/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Video Thumbnail</name>
     <description>Cordova video-thumbnail Plugin</description>
@@ -12,14 +12,14 @@
         <clobbers target="videoThumbnail"/>
     </js-module>
     <platform name="android">
-        <source-file src="src/android/VideoThumbnail.java" target-dir="src/com/lulee007/cordova/videothumbnail"/>
+        <source-file src="src/android/VideoThumbnail.java" target-dir="src/com/dride/cordova/videothumbnail"/>
         <config-file parent="/manifest" target="AndroidManifest.xml">
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
             <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
         </config-file>
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="VideoThumbnail">
-                <param name="android-package" value="com.lulee007.cordova.videothumbnail.VideoThumbnail"/>
+                <param name="android-package" value="com.dride.cordova.videothumbnail.VideoThumbnail"/>
             </feature>
         </config-file>
     </platform>
