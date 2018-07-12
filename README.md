@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/cordova-plugin-video-thumbnail2.svg)](https://badge.fury.io/js/cordova-plugin-video-thumbnail2)
+
 # cordova-plugin-video-thumbnail
 
 This plugins can generate a thumbnail from a remote or local video file.
