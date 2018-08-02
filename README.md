@@ -6,7 +6,7 @@ This plugins can generate a thumbnail from a remote or local video file.
 
 ## Installation
 
-    cordova plugin add cordova-plugin-video-thumbnail
+    cordova plugin add cordova-plugin-video-thumbnail2
 
 ## Supported Platforms
 
