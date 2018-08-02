@@ -5,7 +5,7 @@
 /*
  According to apache license
 
- https://github.com/dride/cordova-plugin-video-thumbnail
+ https://github.com/dride/cordova-plugin-video-thumbnail2
 
  */
 
