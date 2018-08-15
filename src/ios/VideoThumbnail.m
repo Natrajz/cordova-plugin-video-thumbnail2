@@ -22,7 +22,7 @@ command
     width = width > 0 ? width : 100;
     CGFloat height =[[command.arguments objectAtIndex:2] floatValue];
     height = height > 0 ? height : 100;
-    NSNumber *timestamp = [command.arguments objectAtIndex:3];
+    CGFloat timestamp = [[command.arguments objectAtIndex:3] floatValue];
     
     NSString *saveFolder = NSTemporaryDirectory ();
     if (!videoPath || videoPath.length == 0)
@@ -65,7 +65,7 @@ BOOL
 extractVideoThumbnail (NSString * theSourceVideoName,
                        CGFloat width,
                        CGFloat height,
-                       NSNumber * timestamp,
+                       CGFloat timestamp,
                        NSString * theTargetImageName)
 {
     UIImage *thumbnail;
@@ -80,20 +80,18 @@ extractVideoThumbnail (NSString * theSourceVideoName,
     
     AVAssetImageGenerator *imageGenerator =[[AVAssetImageGenerator alloc] initWithAsset:videoAsset];
     
-    CMTime midpoint = CMTimeMakeWithSeconds (0, 600);
     NSError *error = nil;
     CMTime actualTime;
-    
     
     AVURLAsset *asset =[[AVURLAsset alloc] initWithURL: [NSURL fileURLWithPath: theSourceVideoName] options:nil];
     AVAssetImageGenerator *gen =[[AVAssetImageGenerator alloc] initWithAsset:asset];
     gen.appliesPreferredTrackTransform = YES;
     gen.maximumSize = CGSizeMake (width, height);
     
-    CMTime time = CMTimeMakeWithSeconds (0.0, 600);
+    CMTime time = CMTimeMake(timestamp, 1);
     
     CGImageRef image =[gen copyCGImageAtTime: time actualTime: &actualTime error:&error];
-    
+
     
     if (!image || error)
     {
