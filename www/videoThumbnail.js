@@ -18,7 +18,7 @@ var videoThumbnail = {
         config.videoPath,
         config.width,
         config.height,
-        config.kind
+        config.timestamp
       ]);
     });
   }
