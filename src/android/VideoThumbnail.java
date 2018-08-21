@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+
 import android.util.Log;
 import android.media.MediaMetadataRetriever;
 
@@ -22,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -38,6 +40,7 @@ public class VideoThumbnail extends CordovaPlugin {
             final String videoPath = args.getString(0);
             final int width = args.getInt(1) > 0 ? args.getInt(1) : 100;
             final int height = args.getInt(2) > 0 ? args.getInt(2) : 100;
+            final int timestamp = args.getInt(3) > 0 ? args.getInt(3) : 0;
             /**
              * MediaStore.Video.Thumbnails.MICRO_KIND
              */
@@ -54,7 +57,7 @@ public class VideoThumbnail extends CordovaPlugin {
 
                 public void run() {
                     Bitmap bitmap = null;
-                    bitmap = getVideoThumbnail(videoPath, width, height, kind);
+                    bitmap = getVideoThumbnail(videoPath, width, height, kind, timestamp);
                     if (bitmap == null) {
                         callbackContext.error("get video thumbnail failed,maybe videopath was wrong.");
                         return;
@@ -62,10 +65,10 @@ public class VideoThumbnail extends CordovaPlugin {
 
                     FileOutputStream theOutputStream = null;
                     try {
-						String[] r = videoPath.split("/");
-						String name = r[r.length - 1].replace(".mp4", "");
-						
-                        String filePath =cacheDir.getAbsolutePath()+"thumbnail_" + name + ".jpg";
+                        String[] r = videoPath.split("/");
+                        String name = r[r.length - 1].replace(".mp4", "");
+
+                        String filePath =cacheDir.getAbsolutePath()+"thumbnail_" + name + "_" +  timestamp +  ".jpg";
                         File theOutputFile = new File(filePath);
                         if (!theOutputFile.exists()) {
                             if (!theOutputFile.createNewFile()) {
@@ -108,7 +111,7 @@ public class VideoThumbnail extends CordovaPlugin {
      * @return
      */
     private Bitmap getVideoThumbnail(String videoPath, int width, int height,
-                                     int kind){
+                                     int kind, int timestamp){
 
         if (videoPath.contains("http")) {
             Bitmap bitmap = null;
@@ -120,7 +123,7 @@ public class VideoThumbnail extends CordovaPlugin {
                 else
                     mediaMetadataRetriever.setDataSource(videoPath);
                 //   mediaMetadataRetriever.setDataSource(videoPath);
-                bitmap = mediaMetadataRetriever.getFrameAtTime(1, MediaMetadataRetriever.OPTION_CLOSEST);
+                bitmap = mediaMetadataRetriever.getFrameAtTime(timestamp*1000*1000, MediaMetadataRetriever.OPTION_CLOSEST);
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.v(TAG, "Exception in retriveVideoFrameFromVideo(String videoPath)" + e.getMessage());
@@ -134,8 +137,26 @@ public class VideoThumbnail extends CordovaPlugin {
 
         }else {
 
-            return ThumbnailUtils.createVideoThumbnail(videoPath,
-                    MediaStore.Images.Thumbnails.MINI_KIND);
+            Bitmap bitmap = null;
+            MediaMetadataRetriever mediaMetadataRetriever = null;
+            try {
+                mediaMetadataRetriever = new MediaMetadataRetriever();
+                File file = new File(videoPath);
+                FileInputStream inputStream = new FileInputStream(file.getAbsolutePath());
+
+                mediaMetadataRetriever.setDataSource(inputStream.getFD());
+
+                bitmap = mediaMetadataRetriever.getFrameAtTime(timestamp*1000*1000, MediaMetadataRetriever.OPTION_CLOSEST);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.v(TAG, "Exception in retriveVideoFrameFromVideo(String videoPath)" + e.getMessage());
+                return null;
+            } finally {
+                if (mediaMetadataRetriever != null) {
+                    mediaMetadataRetriever.release();
+                }
+            }
+            return bitmap;
 
         }
     }
