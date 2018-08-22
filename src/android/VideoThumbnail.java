@@ -45,7 +45,7 @@ public class VideoThumbnail extends CordovaPlugin {
              * MediaStore.Video.Thumbnails.MICRO_KIND
              */
 
-            final int kind = width > 100 : MediaStore.Video.Thumbnails.MINI_KIND  : MediaStore.Video.Thumbnails.MICRO_KIND;
+            final int kind = width > 100 ? MediaStore.Video.Thumbnails.MINI_KIND  : MediaStore.Video.Thumbnails.MICRO_KIND;
 
             if (videoPath == null || videoPath.isEmpty()) {
                 callbackContext.error("videoPath was wrong");
