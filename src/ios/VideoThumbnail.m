@@ -43,8 +43,8 @@ command
     NSString *name =[array objectAtIndex:array.count - 1];
     name =[name stringByReplacingOccurrencesOfString: @".mp4" withString:@""];
     
-    NSString *savePath =[NSString stringWithFormat:@"%@thumbnail_%@.jpg", saveFolder,
-                         name];
+    NSString *savePath =[NSString stringWithFormat:@"%@thumbnail_%@_%f.jpg", saveFolder,
+                         name, timestamp];
     [self.commandDelegate runInBackground:^
      {
          CDVPluginResult * pluginResult = nil;
