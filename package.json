@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-video-thumbnail2",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Cordova video-thumbnail Plugin",
   "cordova": {
     "id": "cordova-plugin-video-thumbnail2",
