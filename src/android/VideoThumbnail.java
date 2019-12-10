@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
-
 import android.util.Log;
 import android.media.MediaMetadataRetriever;
 
@@ -33,8 +32,7 @@ public class VideoThumbnail extends CordovaPlugin {
 
     private static final String TAG = "videoThumbnail";
 
-    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext)
-            throws JSONException {
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
         Activity activity = this.cordova.getActivity();
         if (action.equals("buildThumbnail")) {
             final String videoPath = args.getString(0);
@@ -45,14 +43,15 @@ public class VideoThumbnail extends CordovaPlugin {
              * MediaStore.Video.Thumbnails.MICRO_KIND
              */
 
-            final int kind = width > 100 ? MediaStore.Video.Thumbnails.MINI_KIND  : MediaStore.Video.Thumbnails.MICRO_KIND;
+            final int kind = width > 100 ? MediaStore.Video.Thumbnails.MINI_KIND
+                    : MediaStore.Video.Thumbnails.MICRO_KIND;
 
             if (videoPath == null || videoPath.isEmpty()) {
                 callbackContext.error("videoPath was wrong");
                 return true;
             }
 
-            final File cacheDir=activity.getExternalCacheDir();
+            final File cacheDir = activity.getExternalCacheDir();
             cordova.getThreadPool().execute(new Runnable() {
 
                 public void run() {
@@ -68,7 +67,7 @@ public class VideoThumbnail extends CordovaPlugin {
                         String[] r = videoPath.split("/");
                         String name = r[r.length - 1].replace(".mp4", "");
 
-                        String filePath =cacheDir.getAbsolutePath()+"thumbnail_" + name + "_" +  timestamp +  ".jpg";
+                        String filePath = cacheDir.getAbsolutePath() + "thumbnail_" + name + "_" + timestamp + ".jpg";
                         File theOutputFile = new File(filePath);
                         if (!theOutputFile.exists()) {
                             if (!theOutputFile.createNewFile()) {
@@ -82,11 +81,11 @@ public class VideoThumbnail extends CordovaPlugin {
                             if (theOutputStream != null)
                                 theOutputStream.close();
                             callbackContext.success(filePath);
-                        }else {
+                        } else {
                             callbackContext.error("Could not save thumbnail; target not writeable");
                             return;
                         }
-                    } catch ( IOException e ) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                         callbackContext.error("I/O exception saving thumbnail");
                     } finally {
@@ -107,11 +106,11 @@ public class VideoThumbnail extends CordovaPlugin {
      * @param videoPath 视频路径
      * @param width
      * @param height
-     * @param kind      eg:MediaStore.Video.Thumbnails.MICRO_KIND   MINI_KIND: 512 x 384，MICRO_KIND: 96 x 96
+     * @param kind      eg:MediaStore.Video.Thumbnails.MICRO_KIND MINI_KIND: 512 x
+     *                  384，MICRO_KIND: 96 x 96
      * @return
      */
-    private Bitmap getVideoThumbnail(String videoPath, int width, int height,
-                                     int kind, int timestamp){
+    private Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind, int timestamp) {
 
         if (videoPath.contains("http")) {
             Bitmap bitmap = null;
@@ -122,8 +121,9 @@ public class VideoThumbnail extends CordovaPlugin {
                     mediaMetadataRetriever.setDataSource(videoPath, new HashMap<String, String>());
                 else
                     mediaMetadataRetriever.setDataSource(videoPath);
-                //   mediaMetadataRetriever.setDataSource(videoPath);
-                bitmap = mediaMetadataRetriever.getFrameAtTime(timestamp*1000*1000, MediaMetadataRetriever.OPTION_CLOSEST);
+                // mediaMetadataRetriever.setDataSource(videoPath);
+                bitmap = mediaMetadataRetriever.getFrameAtTime(timestamp * 1000 * 1000,
+                        MediaMetadataRetriever.OPTION_CLOSEST);
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.v(TAG, "Exception in retriveVideoFrameFromVideo(String videoPath)" + e.getMessage());
@@ -135,18 +135,23 @@ public class VideoThumbnail extends CordovaPlugin {
             }
             return bitmap;
 
-        }else {
-
+        } else {
             Bitmap bitmap = null;
             MediaMetadataRetriever mediaMetadataRetriever = null;
             try {
                 mediaMetadataRetriever = new MediaMetadataRetriever();
                 File file = new File(videoPath);
-                FileInputStream inputStream = new FileInputStream(file.getAbsolutePath());
 
-                mediaMetadataRetriever.setDataSource(inputStream.getFD());
-
-                bitmap = mediaMetadataRetriever.getFrameAtTime(timestamp*1000*1000, MediaMetadataRetriever.OPTION_CLOSEST);
+                // use faster method for thumb at 00:00
+                if (timestamp == 0) {
+                    bitmap = ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(),
+                            MediaStore.Images.Thumbnails.MINI_KIND);
+                } else {
+                    FileInputStream inputStream = new FileInputStream(file.getAbsolutePath());
+                    mediaMetadataRetriever.setDataSource(inputStream.getFD());
+                    bitmap = mediaMetadataRetriever.getFrameAtTime(timestamp * 1000 * 1000,
+                            MediaMetadataRetriever.OPTION_CLOSEST);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.v(TAG, "Exception in retriveVideoFrameFromVideo(String videoPath)" + e.getMessage());
@@ -184,8 +189,8 @@ public class VideoThumbnail extends CordovaPlugin {
             else if (isDownloadsDocument(uri)) {
 
                 final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),
+                        Long.valueOf(id));
 
                 return getDataColumn(context, contentUri, null, null);
             }
@@ -205,9 +210,7 @@ public class VideoThumbnail extends CordovaPlugin {
                 }
 
                 final String selection = "_id=?";
-                final String[] selectionArgs = new String[] {
-                        split[1]
-                };
+                final String[] selectionArgs = new String[] { split[1] };
 
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
@@ -230,27 +233,23 @@ public class VideoThumbnail extends CordovaPlugin {
     }
 
     /**
-     * Get the value of the data column for this Uri. This is useful for
-     * MediaStore Uris, and other file-based ContentProviders.
+     * Get the value of the data column for this Uri. This is useful for MediaStore
+     * Uris, and other file-based ContentProviders.
      *
-     * @param context The context.
-     * @param uri The Uri to query.
-     * @param selection (Optional) Filter used in the query.
+     * @param context       The context.
+     * @param uri           The Uri to query.
+     * @param selection     (Optional) Filter used in the query.
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    public static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
+    public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
 
         Cursor cursor = null;
         final String column = "_data";
-        final String[] projection = {
-                column
-        };
+        final String[] projection = { column };
 
         try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                    null);
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
             if (cursor != null && cursor.moveToFirst()) {
                 final int index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(index);
@@ -261,7 +260,6 @@ public class VideoThumbnail extends CordovaPlugin {
         }
         return null;
     }
-
 
     /**
      * @param uri The Uri to check.
