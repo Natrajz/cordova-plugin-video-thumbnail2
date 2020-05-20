@@ -11,7 +11,7 @@
 
 var exec = require("cordova/exec");
 
-var videoThumbnail = {
+// var videoThumbnail = {
   createThumb: function(config) {
     return new Promise(function(resolve, reject) {
       exec(resolve, reject, "VideoThumbnail", "buildThumbnail", [
@@ -21,7 +21,7 @@ var videoThumbnail = {
         config.timestamp
       ]);
     });
-  }
+//   }
 };
 
 module.exports = videoThumbnail;
